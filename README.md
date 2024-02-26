@@ -42,7 +42,7 @@ power BI 대시보드에서 tableau 대시보드로 변경하여 기존 기능 �
 - 측정값
 - 2P_token_attr : power query 토큰 > 연관어 연산 부분
        
-    ```r
+    ```python
     if len([Token]) = 2 then
         (CASE [Token]
         WHEN "가볍" then "가볍다" WHEN "예쁜" then "예쁘다"
@@ -63,7 +63,7 @@ power BI 대시보드에서 tableau 대시보드로 변경하여 기존 기능 �
     
 - 2p_neg_high_loc_attr : (부정)전처리된 연관어와 매칭하기 위해 리뷰 값도 변경하고 그 후 매칭값은 일괄 “*” 로 변경
     
-    ```r
+    ```python
     if 
     CONTAINS([리뷰],"이쁘") then REPLACE(REPLACE([리뷰], "이쁘", "예쁘"), [2p_neg_token_attr], "*")
     ELSEIF
@@ -78,7 +78,7 @@ power BI 대시보드에서 tableau 대시보드로 변경하여 기존 기능 �
     
 - 2p_pos_token_fil : 워크클라우드에서 클릭한 연관어로만 노출
     
-    ```r
+    ```python
     if [2p_posneg_para]="긍정" then
     [긍정연관어] = [2p_pos_token_para] or [2p_pos_token_para] = "전체"
     elseif [2p_posneg_para]="부정" then
@@ -89,7 +89,7 @@ power BI 대시보드에서 tableau 대시보드로 변경하여 기존 기능 �
     
 - 2p_posneg_fil : 워드클라우드 클릭에 따라(긍정or부정) 긍정(부정)이 노출
     
-    ```r
+    ```python
     case [2p_posneg_para]
     when "전체" then [긍부정] = [긍부정]
     when "긍정" then [긍부정] = [2p_posneg_para]
@@ -99,13 +99,13 @@ power BI 대시보드에서 tableau 대시보드로 변경하여 기존 기능 �
     
 - 2p_neg_loc1_attr : (부정)“*” 찾은 후 나눈 앞부분
     
-    ```r
+    ```python
     TRIM( SPLIT( [2p_neg_high_loc_attr], "*", 1 ) )
     ```
     
 - 2p_neg_loc2_attr : (부정)“*” 찾은 후 나눈 뒷부분
     
-    ```r
+    ```python
     IF TRIM( SPLIT( [2p_neg_high_loc_attr], "*", 2 ) ) = ' '
     THEN ''
     ELSE
@@ -118,7 +118,7 @@ power BI 대시보드에서 tableau 대시보드로 변경하여 기존 기능 �
     
 - 2p_neg_high_attr : 해서 등 제거
     
-    ```r
+    ```python
     if [긍부정] = "부정" then
     if CONTAINS([Token],"해서") then REPLACE([Token],"해서","")
     ELSEIF  CONTAINS([Token],"해도") then REPLACE([Token],"해도","")
@@ -155,7 +155,7 @@ power BI 대시보드에서 tableau 대시보드로 변경하여 기존 기능 �
 
 - 2p_price_text_dim
     
-    ```r
+    ```python
     case [Price2] 
     when 10000 then "1만원대"
     when 20000 then "2만원대"
@@ -175,13 +175,13 @@ power BI 대시보드에서 tableau 대시보드로 변경하여 기존 기능 �
 - 2p_brandset_set_dim : 선택1 컬럼 집합
 - 선택1 : “카테고리” “가격대” 중 먼저 누른 컬럼 (3depth or 2p_price_text)
     
-    ```r
+    ```python
     if [2p_brand_set_dim] then [2p_sel_dim1_attr] else "" END
     ```
     
 - 2p_sel_dim1_attr : 선택1에 들어갈 컬럼
     
-    ```r
+    ```python
     if [2p_dim1_para] = "카테고리"  and [버튼순서1] = 1  then [Depth3]
     ELSEIF [2p_dim2_para] = "가격대"  and [버튼순서2] =1  then [2p_price_text_dim]
     else ""
@@ -190,13 +190,13 @@ power BI 대시보드에서 tableau 대시보드로 변경하여 기존 기능 �
     
 - 선택2 : “카테고리” “가격대” 중 나중에 누른 컬럼 (3depth or 2p_price_text)
     
-    ```r
+    ```python
     if [2p_brandset_set_dim] and [선택1] <> "" then [2p_sel_dim2_attr] else "" END
     ```
     
 - 2p_sel_dim2_attr : 선택2에 들어갈 컬럼
     
-    ```r
+    ```python
     if [2p_dim1_para] = "카테고리"  and [버튼순서1] = 2  then [Depth3]
     ELSEIF [2p_dim2_para] = "가격대"  and [버튼순서2] =2  then [2p_price_text_dim]
     else ""
@@ -205,7 +205,7 @@ power BI 대시보드에서 tableau 대시보드로 변경하여 기존 기능 �
     
 - 2p_sel_dim_fil : 여러 브랜드를 동시 선택하기 위한 필터
     
-    ```r
+    ```python
     [선택2] <> ""  and [선택1] <> "" 
     or
     ([2p_dim2_para]  = "" and [2p_dim1_para] <> "") or 
@@ -228,7 +228,7 @@ power BI 대시보드에서 tableau 대시보드로 변경하여 기존 기능 �
     
 - 2p_sel_dim1_fil : 카테고리나 가격대 중 선택한 부분만 노출되도록 하는 역할, 선택1 부분
     
-    ```r
+    ```python
     ([Depth3] = [2p_sel_dim1_para])
     OR 
     ([2p_price_text_dim] = [2p_sel_dim1_para])
@@ -240,7 +240,7 @@ power BI 대시보드에서 tableau 대시보드로 변경하여 기존 기능 �
     
 - 2p_sel_dim2_fil : 카테고리나 가격대 중 선택한 부분만 노출되도록 하는 역할, 선택2 부분
     
-    ```r
+    ```python
     ([Depth3] = [2p_sel_dim2_para])
     OR 
     ([2p_price_text_dim] = [2p_sel_dim2_para])
@@ -266,7 +266,7 @@ power BI 대시보드에서 tableau 대시보드로 변경하여 기존 기능 �
 - 2p_dim1_attr : [2p_dim1_para], “카테고리” or “가격대”
 - 버튼순서1 : [선택1]컬럼용
     
-    ```r
+    ```python
     if [2p_dim1_attr] <> "" and [2p_dim2_attr] = "" then 1
     elseif [2p_dim1_attr] = "" and [2p_dim2_attr] <> "" then 2
     elseif  [2p_dim1_attr] <> "" and [2p_dim2_attr] <> "" and [버튼순서1_1] =3 and [2p_button1_para] = 0  and [2p_button2_para] = 1  then 1
@@ -282,7 +282,7 @@ power BI 대시보드에서 tableau 대시보드로 변경하여 기존 기능 �
     
 - 버튼순서1_1 : 2p_botton1_para에 적용
     
-    ```r
+    ```python
     if  
     [2p_button1_para] <> 0 and [2p_button2_para] = 0 then 3
     ELSEIF  [2p_button2_para] = 0 then 1
@@ -293,7 +293,7 @@ power BI 대시보드에서 tableau 대시보드로 변경하여 기존 기능 �
 - 2p_dim2_attr : [2p_dim2_para], “카테고리” or “가격대”
 - 버튼순서2 : [선택2]컬럼용
     
-    ```r
+    ```python
     if [2p_dim1_attr] = "" and [2p_dim2_attr] <> "" then 1
     elseif [2p_dim1_attr] <> "" and [2p_dim2_attr] = "" then 2
     elseif  [2p_dim1_attr] <> "" and [2p_dim2_attr] <> "" and [버튼순서1_1] =3 and [2p_button1_para] = 0  and [2p_button2_para] = 1  then 2
@@ -309,7 +309,7 @@ power BI 대시보드에서 tableau 대시보드로 변경하여 기존 기능 �
     
 - 버튼순서2_1 : 2p_bottom2_para에 적용
     
-    ```r
+    ```python
     if 
     [2p_button1_para] <> 0 and [2p_button2_para] = 0 then 3
     ELSEIF  [2p_button1_para] = 0 then 1
